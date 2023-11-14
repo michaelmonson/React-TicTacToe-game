@@ -15,13 +15,13 @@ function Square({ value, onSquareClick }) {
 }
 
 export default function Board() {
-
   /* 
    * Create an array with nine elements (representing our gameboard) and set each of them to null using fill.
    *   - Also note the 'useState(...)' call surrounding the Array initialization. 
    *   - The useState() hook tracks state.  We use it to declare a 'squares' state variable (set to null)
    */
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const [xIsNext, setXIsNext] = useState(true);
 
   /* Update the squares array to represent and track the Square component that has been clicked:
    *   - this function creates a "copy" of the squares array (nextSquares) with the JS slice() function.
@@ -29,8 +29,9 @@ export default function Board() {
    */
   function handleClick(i) { //note that it is only now that we actuall CALL the function with the paren's
     const nextSquares = squares.slice();
-    nextSquares[i] = "X";
+    nextSquares[i] = xIsNext ? "X" : "O";
     setSquares(nextSquares);  //lets React know the component state has changed; triggers a re-render.
+    setXIsNext( !xIsNext );
   }
   
   // Our Board component tracks game state, and passes the value prop down to each Square that it renders:
