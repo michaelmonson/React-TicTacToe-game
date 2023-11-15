@@ -32,7 +32,7 @@ function Board({ xIsNext, squares, onPlay }) {
       return;
     }
     const nextSquares = squares.slice();
-    nextSquares[i] = xIsNext ? "X" : "O";
+    nextSquares[i] = xIsNext ? "♥" : "☼";
     onPlay(nextSquares);
   }
 
@@ -41,8 +41,10 @@ function Board({ xIsNext, squares, onPlay }) {
   let status;
   if (winner) {
     status = "Winner: " + winner;
+  } else if (squares.every(square => square !== null)) {
+    status = "It's a draw!";
   } else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
+    status = "Next player: " + (xIsNext ? "♥" : "☼");
   }
   
   // Our Board component tracks game state, and passes the value prop down to each Square that it renders:
