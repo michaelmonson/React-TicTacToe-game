@@ -40,7 +40,7 @@ function Board({ xIsNext, squares, onPlay }) {
   const winner = calculateWinner(squares);
   let status;
   if (winner) {
-    status = "Winner: " + (!xIsNext ? "X" : "O");
+    status = "Winner: " + winner;
   } else {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
@@ -76,9 +76,6 @@ function Board({ xIsNext, squares, onPlay }) {
  *   - This gives this new "Game" component full control over the Board’s data and allows it to instruct the Board to render previous turns from the history.
  */
 export default function Game() {
-   
-  //Track Player State:
-  const [xIsNext, setXIsNext] = useState(true);
 
   /* Create an array with nine elements (representing our gameboard) and set each of them to null using fill function.
    *   - Also note the 'useState(...)' call surrounding the Array initialization. 
@@ -87,8 +84,9 @@ export default function Game() {
    */
   const [history, setHistory] = useState([Array(9).fill(null)]);
   
-  //Capture current board state:
+  //Capture current board state and track player status:
   const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
   /* Called (by the Board component) to update the game layout: 
@@ -99,13 +97,11 @@ export default function Game() {
     // If we go "back in time," only keep history to that point, then set current move to point at latest history entry:
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);  
-    setCurrentMove(nextHistory.length - 1)
-    setXIsNext( !xIsNext );
+    setCurrentMove(nextHistory.length - 1);
   }
 
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
-    setXIsNext(nextMove % 2 === 0);
   }
 
   const moves = history.map((squares, move) => {
