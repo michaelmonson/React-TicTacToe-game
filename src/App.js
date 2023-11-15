@@ -5,13 +5,13 @@ import { useState } from 'react';
  * We will have 9 instances of 'Square' and each Square receives a value prop ('X', 'O', null)
  */
 function Square({ value, onSquareClick }) {
+  return <button className="square" onClick={onSquareClick}>{value}</button>;
+  
   //Removing the Square's stateful tracking of value and the onclick.  It is better tracked by our Board component (parent)
   //const [value, setValue] = useState(null);  
   // function handleClick() {
   //   setValue('X');
   // }
-
-  return <button className="square" onClick={onSquareClick}>{value}</button>;
 }
 
 export default function Board() {
@@ -27,7 +27,10 @@ export default function Board() {
    *   - this function creates a "copy" of the squares array (nextSquares) with the JS slice() function.
    *   - Update the nextSquares array accordingly, based on use click.
    */
-  function handleClick(i) { //note that it is only now that we actuall CALL the function with the paren's
+  function handleClick(i) { //It is only now that we actuall CALL the function with the paren's
+    if (squares[i]) {
+      return;
+    }
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? "X" : "O";
     setSquares(nextSquares);  //lets React know the component state has changed; triggers a re-render.
