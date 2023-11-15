@@ -4,8 +4,9 @@ import { useState } from 'react';
  * I didn't realize you could have multiple components defined in the same file!
  * We will have 9 instances of 'Square' and each Square receives a value prop ('X', 'O', null)
  */
-function Square({ value, onSquareClick }) {
-  return <button className="square" onClick={onSquareClick}>{value}</button>;
+function Square({ value, onSquareClick, isWinner }) {
+  const classNames = isWinner ? "square winner" : "square";
+  return <button className={classNames} onClick={onSquareClick}>{value}</button>;
   
   //Removing the Square's stateful tracking of value and the onclick.  It is better tracked by our Board component (parent)
   //const [value, setValue] = useState(null);  
@@ -22,7 +23,6 @@ function Square({ value, onSquareClick }) {
  *   - It will now be fully controlled by the "Game" component (parent) based on the props it receives from the parent.
  */
 function Board({ xIsNext, squares, onPlay }) {
-
   /* Update the squares array to represent and track the Square component that has been clicked:
    *   - this function creates a "copy" of the squares array (nextSquares) with the JS slice() function.
    *   - Update the nextSquares array accordingly, based on use click.
@@ -51,19 +51,19 @@ function Board({ xIsNext, squares, onPlay }) {
     <>
       <div className="status">{status}</div>
       <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
+        <Square value={squares[0]} onSquareClick={() => handleClick(0)} isWinner={winner && winner === squares[0]} />
+        <Square value={squares[1]} onSquareClick={() => handleClick(1)} isWinner={winner && winner === squares[1]} />
+        <Square value={squares[2]} onSquareClick={() => handleClick(2)} isWinner={winner && winner === squares[2]} />
       </div>
       <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
+        <Square value={squares[3]} onSquareClick={() => handleClick(3)} isWinner={winner && winner === squares[3]} />
+        <Square value={squares[4]} onSquareClick={() => handleClick(4)} isWinner={winner && winner === squares[4]} />
+        <Square value={squares[5]} onSquareClick={() => handleClick(5)} isWinner={winner && winner === squares[5]} />
       </div>
       <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+        <Square value={squares[6]} onSquareClick={() => handleClick(6)} isWinner={winner && winner === squares[6]} />
+        <Square value={squares[7]} onSquareClick={() => handleClick(7)} isWinner={winner && winner === squares[7]} />
+        <Square value={squares[8]} onSquareClick={() => handleClick(8)} isWinner={winner && winner === squares[8]} />
       </div>
     </>
   );
