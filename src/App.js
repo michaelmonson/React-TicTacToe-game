@@ -21,6 +21,8 @@ export default function Board() {
    *   - The useState() hook tracks state.  We use it to declare a 'squares' state variable (set to null)
    */
   const [squares, setSquares] = useState(Array(9).fill(null));
+  
+  //Track Player State:
   const [xIsNext, setXIsNext] = useState(true);
 
   /* Update the squares array to represent and track the Square component that has been clicked:
@@ -28,7 +30,7 @@ export default function Board() {
    *   - Update the nextSquares array accordingly, based on use click.
    */
   function handleClick(i) { //It is only now that we actuall CALL the function with the paren's
-    if (squares[i]) {
+    if (squares[i] || calculateWinner(squares)) {
       return;
     }
     const nextSquares = squares.slice();
@@ -36,11 +38,19 @@ export default function Board() {
     setSquares(nextSquares);  //lets React know the component state has changed; triggers a re-render.
     setXIsNext( !xIsNext );
   }
+
+  //Display information to the player when the game is over:
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = "Winner: " + (!xIsNext ? "X" : "O");
+  }
   
   // Our Board component tracks game state, and passes the value prop down to each Square that it renders:
   // We are using the arrow function syntax in our Square component, which waits until the user clicks a square before executing.
   return (
     <>
+      <div className="status">{status}</div>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
@@ -58,4 +68,25 @@ export default function Board() {
       </div>
     </>
   );
+}
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
