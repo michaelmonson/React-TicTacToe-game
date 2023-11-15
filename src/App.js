@@ -14,16 +14,14 @@ function Square({ value, onSquareClick }) {
   // }
 }
 
-export default function Board() {
-  /* 
-   * Create an array with nine elements (representing our gameboard) and set each of them to null using fill.
-   *   - Also note the 'useState(...)' call surrounding the Array initialization. 
-   *   - The useState() hook tracks state.  We use it to declare a 'squares' state variable (set to null)
-   */
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  
-  //Track Player State:
-  const [xIsNext, setXIsNext] = useState(true);
+/* This component tracks the Board layout.  It used to be our top-level component.
+ *   - However, we have a new requirement for tracking "history" and all prior board states.
+ *   - By creating a new "Game" component (below), it now becomes our top-level component.
+ *   - For that reason, we have removed the "export default" keywords that were before the 'function Board()' declaration.
+ *   - This tells the index.js file to use the "Game" component as the top-level component instead of the  Board component. 
+ *   - It will now be fully controlled by the "Game" component (parent) based on the props it receives from the parent.
+ */
+function Board({ xIsNext, squares, onPlay }) {
 
   /* Update the squares array to represent and track the Square component that has been clicked:
    *   - this function creates a "copy" of the squares array (nextSquares) with the JS slice() function.
@@ -35,8 +33,7 @@ export default function Board() {
     }
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? "X" : "O";
-    setSquares(nextSquares);  //lets React know the component state has changed; triggers a re-render.
-    setXIsNext( !xIsNext );
+    onPlay(nextSquares);
   }
 
   //Display information to the player when the game is over:
@@ -44,6 +41,8 @@ export default function Board() {
   let status;
   if (winner) {
     status = "Winner: " + (!xIsNext ? "X" : "O");
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
   }
   
   // Our Board component tracks game state, and passes the value prop down to each Square that it renders:
@@ -67,6 +66,45 @@ export default function Board() {
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
     </>
+  );
+}
+
+/* This 'Game' component is now our top-level component so that we can display a list of past moves.
+ *   - in an earlier version, 'Board' was our top-level React component.  That worked fine for the basic Tic-Tac-Toe game.
+ *   - Now, we are placing the history state into this new Game component, which lets us remove the "squares" state from the Board component (now a child).
+ *   - Just like we “lifted state up” from the Square component into the Board component, we are now lifting state up from the Board into the top-level Game component.
+ *   - This gives this new "Game" component full control over the Board’s data and allows it to instruct the Board to render previous turns from the history.
+ */
+export default function Game() {
+   
+  //Track Player State:
+  const [xIsNext, setXIsNext] = useState(true);
+
+  /* Create an array with nine elements (representing our gameboard) and set each of them to null using fill function.
+   *   - Also note the 'useState(...)' call surrounding the Array initialization. 
+   *   - The useState() hook tracks state.  We use it to declare a 'squares' state variable (set to null)
+   *   - Each call of this function adds it to our History as well, from which we can "go back" to any game state
+   */
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  
+  //Capture current board state:
+  const currentSquares = history[history.length - 1];
+
+  //Called (by the Board component) to update the game layout:
+  function handlePlay(nextSquares) {    
+    setHistory([...history, nextSquares]);  //Now adding as a history entry; enumerate all items in hitory.  NOTE: used to let React know the component state has changed; triggered a re-render.
+    setXIsNext( !xIsNext );
+  }
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+      </div>
+      <div className="game-info">
+        <ol>{/* TODO */}</ol>
+      </div>
+    </div>
   );
 }
 
